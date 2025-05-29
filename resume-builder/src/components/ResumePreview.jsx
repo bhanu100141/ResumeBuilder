@@ -1,34 +1,54 @@
-// src/components/ResumePreview.jsx
+import React from "react";
 import { useResume } from "../context/ResumeContext";
 
-const ResumePreview = () => {
-  const { data } = useResume();
+const titleCase = (str) =>
+  str.charAt(0).toUpperCase() + str.slice(1).replace(/([A-Z])/g, " $1").trim();
+
+export default function ResumePreview() {
+  const { sections, sectionOrder } = useResume();
 
   return (
-    <div className="p-4 border bg-white shadow rounded">
-      <h2 className="text-xl font-bold mb-2">Live Resume Preview</h2>
-      {data.sectionOrder.map((section) => (
-        <div key={section} className="mb-4">
-          <h3 className="text-lg font-semibold capitalize">
-            {section.replace(/([A-Z])/g, ' $1')}
-          </h3>
-          {section === "personalInfo" ? (
-            <p>{data.personalInfo.name} — {data.personalInfo.email}</p>
-          ) : (
-            <ul className="list-disc ml-5">
-              {data[section]?.map((item, index) => (
-                <li key={index}>
-                  {typeof item === "string"
-                    ? item
-                    : Object.values(item).filter(Boolean).join(", ")}
+    <div className="prose max-w-none">
+      {sectionOrder.map((sectionKey) => {
+        const data = sections[sectionKey];
+        if (sectionKey === "personalInfo") {
+          return (
+            <section key={sectionKey} className="mb-6">
+              <h2 className="text-2xl font-bold mb-1">{titleCase(sectionKey)}</h2>
+              <p>
+                <strong>Name: </strong> {data.name || "-"}
+              </p>
+              <p>
+                <strong>Email: </strong> {data.email || "-"}
+              </p>
+            </section>
+          );
+        }
+
+        if (!data.length) {
+          return null;
+        }
+
+        return (
+          <section key={sectionKey} className="mb-6">
+            <h2 className="text-2xl font-bold mb-2">{titleCase(sectionKey)}</h2>
+            <ul className="list-disc list-inside space-y-2">
+              {data.map((entry, i) => (
+                <li key={i} className="bg-gray-50 p-3 rounded shadow-sm">
+                  {Object.entries(entry).map(([key, value]) =>
+                    value ? (
+                      <p key={key}>
+                        <strong>{titleCase(key)}: </strong>
+                        {value}
+                      </p>
+                    ) : null
+                  )}
                 </li>
               ))}
             </ul>
-          )}
-        </div>
-      ))}
+          </section>
+        );
+      })}
     </div>
   );
-};
-
-export default ResumePreview;
+}

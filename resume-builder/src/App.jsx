@@ -1,21 +1,21 @@
-// src/App.jsx
+import React from "react";
 import { ResumeProvider } from "./context/ResumeContext";
 import ResumeEditor from "./components/ResumeEditor";
 import ResumePreview from "./components/ResumePreview";
 
-function App() {
+export default function App() {
   return (
     <ResumeProvider>
-      <div className="flex flex-col md:flex-row gap-4 p-4">
-        <div className="w-full md:w-1/2">
+      <div className="min-h-screen bg-gray-100 p-6 md:p-12 flex flex-col md:flex-row gap-6">
+        <div className="md:w-1/2 bg-white p-6 rounded shadow overflow-auto max-h-screen">
+          <h1 className="text-3xl font-bold mb-4">Resume Builder</h1>
           <ResumeEditor />
         </div>
-        <div className="w-full md:w-1/2">
+        <div className="md:w-1/2 bg-white p-6 rounded shadow overflow-auto max-h-screen">
+          <h1 className="text-3xl font-bold mb-4">Resume Preview</h1>
           <ResumePreview />
         </div>
       </div>
     </ResumeProvider>
   );
 }
-
-export default App;

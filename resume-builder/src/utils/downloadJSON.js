@@ -1,10 +1,10 @@
-// src/utils/downloadJSON.js
-export const downloadJSON = (data, filename = "resume.json") => {
-  const file = new Blob([JSON.stringify(data, null, 2)], {
-    type: "application/json",
-  });
+export function downloadJSON(data, filename = "resume.json") {
+  const jsonStr = JSON.stringify(data, null, 2);
+  const blob = new Blob([jsonStr], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
-  a.href = URL.createObjectURL(file);
+  a.href = url;
   a.download = filename;
   a.click();
-};
+  URL.revokeObjectURL(url);
+}

@@ -1,86 +1,51 @@
-// src/components/Section.jsx
+import React from "react";
 import { useResume } from "../context/ResumeContext";
+
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
-const Section = ({ sectionKey }) => {
+const titleCase = (str) =>
+  str.charAt(0).toUpperCase() + str.slice(1).replace(/([A-Z])/g, " $1").trim();
+
+export default function Section({ sectionKey, data }) {
   const {
-    data,
-    setPersonalInfo,
-    updateSection,
+    updatePersonalInfo,
     addEntry,
     removeEntry,
+    updateEntry,
   } = useResume();
 
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
-    id: sectionKey,
-  });
+  // Use sortable hook to make section draggable
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: sectionKey });
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
+    cursor: "grab",
+    opacity: isDragging ? 0.7 : 1,
   };
 
-  const renderFields = () => {
-    if (sectionKey === "personalInfo") {
-      return (
-        <div className="flex flex-col gap-2">
-          <input
-            className="border p-2"
-            placeholder="Name"
-            value={data.personalInfo.name}
-            onChange={(e) => setPersonalInfo("name", e.target.value)}
-          />
-          <input
-            className="border p-2"
-            placeholder="Email"
-            value={data.personalInfo.email}
-            onChange={(e) => setPersonalInfo("email", e.target.value)}
-          />
-        </div>
-      );
-    }
+  const fieldsBySection = {
+    personalInfo: ["name", "email"],
+    education: ["degree", "institution", "year"],
+    experience: ["title", "company", "duration"],
+    projects: ["name", "description", "link"],
+    skills: ["skill"],
+  };
 
-    return (
-      <div className="flex flex-col gap-2">
-        {data[sectionKey]?.map((entry, index) => (
-          <div key={index} className="border p-2">
-            {sectionKey === "skills" ? (
-              <input
-                className="w-full p-1 border"
-                placeholder="Skill"
-                value={entry}
-                onChange={(e) => updateSection(sectionKey, index, null, e.target.value)}
-              />
-            ) : (
-              Object.keys(entry).map((field) => (
-                <input
-                  key={field}
-                  className="w-full p-1 border mb-1"
-                  placeholder={field}
-                  value={entry[field] || ""}
-                  onChange={(e) =>
-                    updateSection(sectionKey, index, field, e.target.value)
-                  }
-                />
-              ))
-            )}
-            <button
-              onClick={() => removeEntry(sectionKey, index)}
-              className="text-sm text-red-500 mt-1"
-            >
-              Remove
-            </button>
-          </div>
-        ))}
-        <button
-          onClick={() => addEntry(sectionKey)}
-          className="mt-2 text-blue-600 underline"
-        >
-          + Add {sectionKey.slice(0, -1)}
-        </button>
-      </div>
-    );
+  const handlePersonalInfoChange = (field, e) => {
+    updatePersonalInfo(field, e.target.value);
+  };
+
+  const handleEntryChange = (index, field, e) => {
+    updateEntry(sectionKey, index, field, e.target.value);
   };
 
   return (
@@ -89,12 +54,63 @@ const Section = ({ sectionKey }) => {
       style={style}
       {...attributes}
       {...listeners}
-      className="border p-3 my-2 bg-gray-100 rounded"
+      className="mb-6 p-4 border border-gray-300 rounded shadow-sm bg-white select-none"
     >
-      <h3 className="font-semibold capitalize mb-2">{sectionKey.replace(/([A-Z])/g, ' $1')}</h3>
-      {renderFields()}
+      <h2 className="text-xl font-semibold mb-3">{titleCase(sectionKey)}</h2>
+
+      {sectionKey === "personalInfo" ? (
+        fieldsBySection.personalInfo.map((field) => (
+          <div className="mb-2" key={field}>
+            <label className="block font-medium mb-1">{titleCase(field)}</label>
+            <input
+              type={field === "email" ? "email" : "text"}
+              value={data[field] || ""}
+              onChange={(e) => handlePersonalInfoChange(field, e)}
+              className="w-full border border-gray-300 rounded px-2 py-1"
+            />
+          </div>
+        ))
+      ) : (
+        <>
+          {data.length === 0 && (
+            <p className="mb-2 italic text-gray-500">No entries yet.</p>
+          )}
+
+          {data.map((entry, i) => (
+            <div
+              key={i}
+              className="mb-4 p-3 border border-gray-200 rounded bg-gray-50 relative"
+            >
+              {fieldsBySection[sectionKey].map((field) => (
+                <div className="mb-2" key={field}>
+                  <label className="block font-medium mb-1">{titleCase(field)}</label>
+                  <input
+                    type="text"
+                    value={entry[field] || ""}
+                    onChange={(e) => handleEntryChange(i, field, e)}
+                    className="w-full border border-gray-300 rounded px-2 py-1"
+                  />
+                </div>
+              ))}
+
+              <button
+                onClick={() => removeEntry(sectionKey, i)}
+                className="absolute top-2 right-2 text-red-600 hover:text-red-800 font-bold"
+                aria-label={`Remove ${titleCase(sectionKey)} entry`}
+              >
+                &times;
+              </button>
+            </div>
+          ))}
+
+          <button
+            onClick={() => addEntry(sectionKey)}
+            className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+          >
+            Add {titleCase(sectionKey)} Entry
+          </button>
+        </>
+      )}
     </div>
   );
-};
-
-export default Section;
+}

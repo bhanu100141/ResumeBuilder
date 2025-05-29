@@ -1,132 +1,103 @@
-// src/components/ResumeEditor.jsx
 import React from "react";
 import { useResume } from "../context/ResumeContext";
+import Section from "./Section";
 
-const ResumeEditor = () => {
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragOverlay,
+} from "@dnd-kit/core";
+
+import {
+  arrayMove,
+  SortableContext,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+
+import { downloadJSON } from "../utils/downloadJSON";
+
+export default function ResumeEditor() {
   const {
-    data,
-    setPersonalInfo,
-    updateSection,
-    addEntry,
-    removeEntry,
+    sections,
+    sectionOrder,
+    reorderSections,
   } = useResume();
 
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
+  );
+
+  const [activeId, setActiveId] = React.useState(null);
+
+  function handleDragStart(event) {
+    setActiveId(event.active.id);
+  }
+
+  function handleDragEnd(event) {
+    const { active, over } = event;
+    if (active.id !== over?.id) {
+      const oldIndex = sectionOrder.indexOf(active.id);
+      const newIndex = sectionOrder.indexOf(over.id);
+      const newOrder = arrayMove(sectionOrder, oldIndex, newIndex);
+      reorderSections(newOrder);
+    }
+    setActiveId(null);
+  }
+
+  function handleDownload() {
+    const exportData = {
+      personalInfo: sections.personalInfo,
+      sectionOrder,
+      education: sections.education,
+      experience: sections.experience,
+      projects: sections.projects,
+      skills: sections.skills,
+    };
+
+    downloadJSON(exportData);
+  }
+
   return (
-    <div className="editor container">
-      <div className="section">
-        <h3>Personal Info</h3>
-        <input
-          type="text"
-          placeholder="Name"
-          value={data.personalInfo.name}
-          onChange={(e) => setPersonalInfo("name", e.target.value)}
-        />
-        <input
-          type="email"
-          placeholder="Email"
-          value={data.personalInfo.email}
-          onChange={(e) => setPersonalInfo("email", e.target.value)}
-        />
+    <>
+      <div className="mb-4">
+        <button
+          onClick={handleDownload}
+          className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
+        >
+          Download Resume JSON
+        </button>
       </div>
 
-      {["education", "experience", "projects", "skills"].map((sectionKey) => (
-        <div className="section" key={sectionKey}>
-          <h3>{sectionKey.charAt(0).toUpperCase() + sectionKey.slice(1)}</h3>
-
-          {data[sectionKey].map((entry, index) => (
-            <div key={index}>
-              {sectionKey === "education" && (
-                <>
-                  <input
-                    placeholder="Degree"
-                    value={entry.degree}
-                    onChange={(e) =>
-                      updateSection(sectionKey, index, "degree", e.target.value)
-                    }
-                  />
-                  <input
-                    placeholder="Institution"
-                    value={entry.institution}
-                    onChange={(e) =>
-                      updateSection(sectionKey, index, "institution", e.target.value)
-                    }
-                  />
-                  <input
-                    placeholder="Year"
-                    value={entry.year}
-                    onChange={(e) =>
-                      updateSection(sectionKey, index, "year", e.target.value)
-                    }
-                  />
-                </>
-              )}
-
-              {sectionKey === "experience" && (
-                <>
-                  <input
-                    placeholder="Job Title"
-                    value={entry.title}
-                    onChange={(e) =>
-                      updateSection(sectionKey, index, "title", e.target.value)
-                    }
-                  />
-                  <input
-                    placeholder="Company"
-                    value={entry.company}
-                    onChange={(e) =>
-                      updateSection(sectionKey, index, "company", e.target.value)
-                    }
-                  />
-                  <input
-                    placeholder="Duration"
-                    value={entry.duration}
-                    onChange={(e) =>
-                      updateSection(sectionKey, index, "duration", e.target.value)
-                    }
-                  />
-                </>
-              )}
-
-              {sectionKey === "projects" && (
-                <>
-                  <input
-                    placeholder="Project Name"
-                    value={entry.name}
-                    onChange={(e) =>
-                      updateSection(sectionKey, index, "name", e.target.value)
-                    }
-                  />
-                  <input
-                    placeholder="Description"
-                    value={entry.description}
-                    onChange={(e) =>
-                      updateSection(sectionKey, index, "description", e.target.value)
-                    }
-                  />
-                </>
-              )}
-
-              {sectionKey === "skills" && (
-                <input
-                  placeholder="Skill"
-                  value={entry}
-                  onChange={(e) =>
-                    updateSection(sectionKey, index, null, e.target.value)
-                  }
-                />
-              )}
-
-              <button className="remove-btn" onClick={() => removeEntry(sectionKey, index)}>
-                Remove
-              </button>
-            </div>
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext
+          items={sectionOrder}
+          strategy={verticalListSortingStrategy}
+        >
+          {sectionOrder.map((sectionKey) => (
+            <Section
+              key={sectionKey}
+              sectionKey={sectionKey}
+              data={sections[sectionKey]}
+            />
           ))}
+        </SortableContext>
 
-          <button onClick={() => addEntry(sectionKey)}>Add {sectionKey}</button>
-        </div>
-      ))}
-    </div>
+        <DragOverlay>
+          {activeId ? (
+            <div className="p-3 bg-blue-200 rounded shadow font-bold select-none">
+              {activeId.charAt(0).toUpperCase() + activeId.slice(1)}
+            </div>
+          ) : null}
+        </DragOverlay>
+      </DndContext>
+    </>
   );
-};
-
-export default ResumeEditor;
+}
