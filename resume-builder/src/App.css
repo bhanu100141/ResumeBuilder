@@ -90,10 +90,12 @@ input[type="email"] {
 input[type="text"]:focus,
 input[type="email"]:focus {
   outline: none;
-  border-color: #00ff00;
-  background-color: #152715;
-  box-shadow: 0 0 8px #00ff00aa;
+  border-color: #00cc66; /* softer green */
+  background-color: #191f18; /* subtle darker bg */
+  box-shadow: none; /* remove glowing shadow */
+  transition: border-color 0.3s ease, background-color 0.3s ease;
 }
+
 
 /* Buttons */
 button {
@@ -111,11 +113,12 @@ button {
 
 button:hover,
 button:focus {
-  background-color: #00ff00;
-  color: #121212;
+  background-color: #00cc66; /* darker green instead of neon */
+  color: #ffffff;
   outline: none;
-  box-shadow: 0 0 12px #00ff00cc;
+  transform: translateY(-1px);
 }
+
 
 /* Remove Entry Button */
 button.remove-entry {
