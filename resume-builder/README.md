@@ -12,7 +12,7 @@ A dynamic resume builder web app built with **React** that allows users to:
 - **Framework**: React (Vite)
 - **Styling**: Custom CSS (Single file)
 - **State Management**: Context API
-- **Drag & Drop**: [`react-beautiful-dnd`](https://github.com/atlassian/react-beautiful-dnd)
+- **Drag & Drop**: [`react-beautiful-dnd`](https://github.com/bhanu100141/ResumeBuilder/tree/main/resume-builder)
 
 ##  Features
 
@@ -26,10 +26,42 @@ A dynamic resume builder web app built with **React** that allows users to:
 - Drag-and-drop to reorder sections
 - JSON export that respects section order
 
-##  Getting Started
+## Install dependencies
 
-### 1. Clone the repository
+npm install
 
-```bash
-git clone https://github.com/your-username/resume-builder.git
-cd resume-builder
+## Run the app locally
+
+npm run dev
+
+
+## Exported JSON Sample
+
+{
+  "personalInfo": {
+    "name": "Karan Dev",
+    "email": "karan@example.com"
+  },
+  "sectionOrder": ["education", "experience", "projects"],
+  "education": [
+    {
+      "degree": "B.Tech",
+      "institution": "Goa University",
+      "year": "2020"
+    }
+  ],
+  "experience": [
+    {
+      "title": "Frontend Developer",
+      "company": "Lightning Leap",
+      "duration": "2023–2025"
+    }
+  ],
+  "projects": [],
+  "skills": []
+}
+
+
+## Github Link
+
+https://github.com/bhanu100141/ResumeBuilder/tree/main/resume-builder
