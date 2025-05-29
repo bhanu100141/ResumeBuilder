@@ -1,4 +1,4 @@
-/* Reset and base */
+
 *,
 *::before,
 *::after {
@@ -8,14 +8,14 @@
 body {
   margin: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #121212; /* dark background */
-  color: #f0f0f0; /* light text */
+  background-color: #121212; 
+  color: #f0f0f0; 
   line-height: 1.5;
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-weight: 600;
-  color: #e6f4ea; /* soft greenish white */
+  color: #e6f4ea; 
   margin: 0 0 1rem 0;
 }
 
@@ -23,7 +23,6 @@ p {
   margin: 0 0 1rem 0;
 }
 
-/* Containers */
 .app-container {
   display: flex;
   flex-direction: column;
@@ -49,7 +48,6 @@ p {
   overflow-y: auto;
 }
 
-/* Section Styles */
 .section {
   margin-bottom: 1.5rem;
   border: 2px solid #004d26;
@@ -66,15 +64,14 @@ p {
   box-shadow: 0 0 15px #00ff00cc;
 }
 
-/* Section Title */
+
 .section h2 {
   margin-bottom: 1rem;
-  color: #7fff7f; /* bright green */
+  color: #7fff7f; 
   text-transform: capitalize;
   letter-spacing: 0.03em;
 }
 
-/* Input styles */
 input[type="text"],
 input[type="email"] {
   width: 100%;
@@ -90,14 +87,12 @@ input[type="email"] {
 input[type="text"]:focus,
 input[type="email"]:focus {
   outline: none;
-  border-color: #00cc66; /* softer green */
-  background-color: #191f18; /* subtle darker bg */
-  box-shadow: none; /* remove glowing shadow */
+  border-color: #00cc66; 
+  background-color: #191f18; 
+  box-shadow: none; 
   transition: border-color 0.3s ease, background-color 0.3s ease;
 }
 
-
-/* Buttons */
 button {
   background-color: #007a33;
   border: none;
@@ -113,14 +108,12 @@ button {
 
 button:hover,
 button:focus {
-  background-color: #00cc66; /* darker green instead of neon */
+  background-color: #00cc66; 
   color: #ffffff;
   outline: none;
   transform: translateY(-1px);
 }
 
-
-/* Remove Entry Button */
 button.remove-entry {
   position: absolute;
   top: 0.5rem;
@@ -139,7 +132,6 @@ button.remove-entry:hover {
   color: #ff0000;
 }
 
-/* Entry containers inside sections */
 .entry {
   position: relative;
   background-color: #1f1f1f;
@@ -150,7 +142,6 @@ button.remove-entry:hover {
   box-shadow: inset 0 0 8px #004d26;
 }
 
-/* Lists in preview */
 ul {
   list-style-type: disc;
   padding-left: 1.5rem;
@@ -252,7 +243,6 @@ h1 {
   box-sizing: border-box;
 }
 
-/* Smooth transitions */
 input,
 button,
 .section {
